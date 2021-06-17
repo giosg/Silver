@@ -109,13 +109,14 @@ for host in cached_hosts:
 count = 0
 shodan_count = core.memory.config['max_shodan_credits'] * 20
 shodan_eligible = []
-for host in master_db:
-	if host not in exclude:
-		if len(master_db[host]) >= core.memory.config['shodan_call_threshold'] and core.memory.config['shodan_api_key']:
-			shodan_eligible.append(host)
-			shodan_count -= 1
-		for port in master_db[host]:
-			count += 1
+if core.memory.config['shodan_enabled']:
+	for host in master_db:
+		if host not in exclude:
+			if len(master_db[host]) >= core.memory.config['shodan_call_threshold'] and core.memory.config['shodan_api_key']:
+				shodan_eligible.append(host)
+				shodan_count -= 1
+			for port in master_db[host]:
+				count += 1
 
 print('%s %i services to fingerprint' % (run, count))
 

@@ -36,7 +36,7 @@ def parse_masscan(file):
 
 def notify(message, service='slack'):
 	if service == 'slack':
-		webhook_url = config['slack_webook']
+		webhook_url = config['slack_webhook']
 		if webhook_url:
 			data = {'text': message}
 			requests.post(webhook_url, json=data)
