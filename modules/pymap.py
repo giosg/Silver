@@ -25,7 +25,7 @@ def parse_result(ip, nmapfile):
 def pymap(ip, ports, exclude, nmapfile):
 	if ip not in exclude:
 		ports = ','.join([str(port) for port in ports])
-		subprocess.getoutput('nmap -Pn -oX %s -sV %s -p%s' % (nmapfile, ip, ports))
+		subprocess.getoutput('nmap -Pn -sT -oX %s -sV %s -p%s' % (nmapfile, ip, ports))
 		return parse_result(ip, nmapfile)
 	else:
 		return 'cached'
