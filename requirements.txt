@@ -1,2 +1,5 @@
 psutil
 requests
+jinja2
+slack_sdk
+python-dotenv
