@@ -40,7 +40,7 @@ class Setting:
 
 __setting_manifest = [
     Setting("SLACK_WEBHOOK", str),
-    Setting("REDIS_PORT", int, default=6379),
+    #Setting("REDIS_PORT", int, default=6379),
 ]
 
 
