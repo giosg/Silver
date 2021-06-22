@@ -6,7 +6,7 @@ import sys
 import json
 import psutil
 import argparse
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 import core.memory
 from modules.pymap import pymap
@@ -16,6 +16,13 @@ from core.resolver import resolver
 from core.colors import run, bad, end, good, info, white
 from core.utils import notify, load_json, write_json, parse_masscan
 
+# Constants and templates
+
+MASSCAN_FILE_TEMPLATE = "result-{target_name}.txt"
+NMAP_FILE_TEMPLATE = "nmap-{target_name}.txt"
+
+# /end
+
 print('''
 \t%s𝘴𝘪𝘭𝘷𝘦𝘳%s
 ''' % (white, end))
@@ -23,16 +30,16 @@ print('''
 if os.geteuid() != 0:
 	quit('%s You need to run Silver a root!' % info)
 
-cwd = sys.path[0]
-
 parser = argparse.ArgumentParser()
 parser.add_argument(help='host(s) to scan', dest='host', nargs='?')
 parser.add_argument('-i', help='path of input file', dest='input_file')
 parser.add_argument('-m', '--method', help='software or cpe', dest='method')
 parser.add_argument('-r', '--rate', help='masscan packets per second rate', dest='rate', type=int, default=1000)
-parser.add_argument('-t', '--threads', help='nmap threads to run in parallel', dest='threads', type=int)
+parser.add_argument('-t', '--threads', help='nmap threads to run in parallel (defaults to half of cores+1)', dest='threads', type=int, default=round(cpu_count()/2)+1)
 parser.add_argument('-q', '--quick', help='only scan top ~1000 ports', dest='quick', action='store_true')
 parser.add_argument('--resolve', help='txt file contains hostnames too', dest='resolve', action='store_true')
+parser.add_argument('--cleanup-results', help='remove masscan and nmap result files after execution', dest='cleanup', action='store_true')
+parser.add_argument('-C', '--workdir', help='directory to create scan result files (can be tmpfs as well)', dest='workdir', default=os.getcwd())
 args = parser.parse_args()
 
 host = ','.join(resolver(args.host.split(','))) if args.host else args.host
@@ -40,6 +47,7 @@ quick = args.quick
 method = args.method
 threads = args.threads
 input_file = args.input_file
+workdir = args.workdir
 
 target_name = ''
 
@@ -50,8 +58,8 @@ elif input_file:
 else:
 	quit('%s No hosts to scan.' % bad)
 
-savefile = cwd + '/result-' + target_name + '.txt'
-nmapfile = cwd + '/nmap-' + target_name + '.xml'
+savefile = os.path.join(workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
+nmapfile = os.path.join(NMAP_FILE_TEMPLATE.format(target_name=target_name))
 
 if args.resolve and input_file:
 	print('%s Resolving hostnames to IPs for masscan' % run)
@@ -175,3 +183,8 @@ for ip in master_db:
 			print('%s %s' % (good, message))
 
 print('%s Scan completed' % good)
+
+if args.cleanup:
+	print('%s Cleaning up the files created...' % info)
+	os.remove(savefile)
+	os.remove(nmapfile)
