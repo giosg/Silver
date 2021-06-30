@@ -15,6 +15,9 @@ from modules.vulners import vulners
 from core.resolver import resolver
 from core.colors import run, bad, end, good, info, white
 from core.utils import notify, load_json, write_json, parse_masscan
+from notifications.hostinfo import HostInfo, HostService
+from ipaddress import ip_address
+from notifications.notifiers import notify
 
 # Constants and templates
 
@@ -168,7 +171,10 @@ print('%s Updated %s' % (info, savefile))
 
 print('%s Looking for vulnerablilites' % run)
 
+host_results = []
+
 for ip in master_db:
+	services = []
 	for port in master_db[ip]:
 		cpe = master_db[ip][port]['cpe']
 		name = master_db[ip][port]['software']
@@ -177,10 +183,16 @@ for ip in master_db:
 		if use_cpe:
 			software = cpe
 		is_vuln = vulners(software, version, cpe=use_cpe)
-		if is_vuln:
-			message = '%s %s running on %s:%s is outdated' % (name, version, ip, port)
-			notify('[Vuln] %s' % message)
-			print('%s %s' % (good, message))
+		services.append(HostService(name, port, version, is_vuln))
+	if not services:
+		continue
+	host_results.append(HostInfo(
+		address=ip_address(ip),
+		services=services
+		)
+	)
+
+notify(host_results)
 
 print('%s Scan completed' % good)
 
