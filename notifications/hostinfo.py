@@ -7,6 +7,8 @@ class HostService:
     self.port = port
     self.definition = definition
     self.is_vuln = is_vuln
+    if self.name is None:
+      self.is_vuln = None
     self.appendix = appendix
 
 class HostInfo:
