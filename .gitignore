@@ -1,3 +1,7 @@
 db/vulners_cache.json
 **/__pycache__
 results
+.vscode
+paused.conf
+result-*.txt
+nmap-*.txt
