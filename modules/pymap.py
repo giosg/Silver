@@ -1,5 +1,7 @@
 import re
 import subprocess
+from hashlib import sha1
+from os import remove, path
 
 from core.utils import load_json
 
@@ -22,10 +24,20 @@ def parse_result(ip, nmapfile):
 						result[ip][port]['version'] = match.group(9).split(':')[-1]
 	return result
 
-def pymap(ip, ports, exclude, nmapfile):
+def pymap(ip, ports, exclude, workdir, cleanup):
+	ports = ','.join([str(port) for port in sorted(ports)])
+	nmapfile = path.join(workdir, "nmap-{}-{}.xml".format(
+			ip,
+			sha1(
+				(ip+ports).encode('utf8')
+			).hexdigest()
+		)
+	)
 	if ip not in exclude:
-		ports = ','.join([str(port) for port in ports])
 		subprocess.getoutput('nmap -Pn -sT -oX %s -sV %s -p%s' % (nmapfile, ip, ports))
-		return parse_result(ip, nmapfile)
+		result = parse_result(ip, nmapfile)
+		if cleanup:
+			remove(nmapfile)
+		return result
 	else:
 		return 'cached'
