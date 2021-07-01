@@ -62,7 +62,6 @@ else:
 	quit('%s No hosts to scan.' % bad)
 
 savefile = os.path.join(workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
-nmapfile = os.path.join(NMAP_FILE_TEMPLATE.format(target_name=target_name))
 
 if args.resolve and input_file:
 	print('%s Resolving hostnames to IPs for masscan' % run)
@@ -75,7 +74,7 @@ core.memory.global_vars['shodan_queries'] = 0
 
 hostfile = ''
 if not host:
-	host = ' '
+	host = ' ' # tear this the fuck down
 	hostfile = '-iL ' + input_file
 else:
 	host = ' %s ' % host
@@ -157,7 +156,7 @@ if num_cpus != 0:
 	print('%s ETA: %i seconds ' % (info, count * 22/num_cpus))
 	pool = Pool(processes=num_cpus)
 
-	results = [pool.apply_async(pymap, args=(host, master_db[host], exclude, nmapfile)) for host in master_db]
+	results = [pool.apply_async(pymap, args=(host, master_db[host], exclude, workdir, args.cleanup)) for host in master_db]
 
 	for p in results:
 		result = p.get()
@@ -199,4 +198,3 @@ print('%s Scan completed' % good)
 if args.cleanup:
 	print('%s Cleaning up the files created...' % info)
 	os.remove(savefile)
-	os.remove(nmapfile)
