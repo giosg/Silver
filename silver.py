@@ -11,7 +11,7 @@ from multiprocessing import Pool, cpu_count
 import core.memory
 from modules.pymap import pymap
 from modules.shodan import shodan
-from modules.vulners import vulners
+from modules.vulners import VulnersExplorer
 from core.resolver import resolver
 from core.colors import run, bad, end, good, info, white
 from core.utils import notify, load_json, write_json, parse_masscan
@@ -43,6 +43,7 @@ parser.add_argument('-q', '--quick', help='only scan top ~1000 ports', dest='qui
 parser.add_argument('--resolve', help='txt file contains hostnames too', dest='resolve', action='store_true')
 parser.add_argument('--cleanup-results', help='remove masscan and nmap result files after execution', dest='cleanup', action='store_true')
 parser.add_argument('-C', '--workdir', help='directory to create scan result files (can be tmpfs as well)', dest='workdir', default=os.getcwd())
+parser.add_argument('--vuln-cache-file', help='path to file to be used as the vulnerability cache for the future runs', dest='vulncachepath', default=os.path.join(os.getcwd(), 'db', 'vulners_cache.json'))
 args = parser.parse_args()
 
 host = ','.join(resolver(args.host.split(','))) if args.host else args.host
@@ -53,6 +54,8 @@ input_file = args.input_file
 workdir = args.workdir
 
 target_name = ''
+
+vuln_explorer = VulnersExplorer(cache_file_path=args.vulncachepath)
 
 if host:
 	target_name = host.strip().split(',')[0].split('/')[0]
@@ -181,7 +184,7 @@ for ip in master_db:
 		software = name
 		if use_cpe:
 			software = cpe
-		is_vuln = vulners(software, version, cpe=use_cpe)
+		is_vuln = vuln_explorer.vulners(software, version, cpe=use_cpe)
 		services.append(HostService(name, port, version, is_vuln))
 	if not services:
 		continue
