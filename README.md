@@ -2,7 +2,7 @@
   <br>
   <a href="https://github.com/s0md3v/Silver"><img src="https://i.ibb.co/bv3rqXs/silver.png" alt="Silver"></a>
   <br>
-  Silver
+  Silver - giosg-flavoured edition
   <br>
 </h1>
 
@@ -18,6 +18,7 @@
 </p>
 
 ### Introduction
+
 masscan is fast, nmap can fingerprint software and vulners is a huge vulnerability database. Silver is a front-end that allows
 complete utilization of these programs by parsing data, spawning parallel processes, caching vulnerability data for faster
 scanning over time and much more.
@@ -25,12 +26,13 @@ scanning over time and much more.
 ![demo](https://i.ibb.co/nPK8yD8/Untitled.png)
 
 ### Features
+
 - Resumable scanning
-- Slack notifcations
+- Slack notifications
 - Multi-core utilization
 - Supports: IPs, CIDR & hostnames
 - Vulnerability data caching
-- Smart Shodan integration*
+- Smart Shodan integration* - disabled in giosg edition by now
 
 *\*Shodan integration is optional but when linked, Silver can automatically use Shodan to retrieve service and vulnerability data if a host has a lot of ports open to save resources.
 Shodan credits used per scan by Silver can be throttled. The minimum number of ports to trigger Shodan can be configured as well.*
@@ -38,27 +40,38 @@ Shodan credits used per scan by Silver can be throttled. The minimum number of p
 ### Setup
 
 #### Downloading Silver
-`git clone https://github.com/s0md3v/Silver`
+
+`git clone https://github.com/giosg/Silver`
 
 ### Requirements
 
 #### External Programs
+
 - [nmap](https://nmap.org/)
 - [masscan](https://github.com/robertdavidgraham/masscan)
 
+```ShellSession
+apt update && apt install -y masscan nmap tmux python3 python3-pip
+```
+
 #### Python libraries
+
 - psutil
 - requests
+- jinja2
+- slack_sdk
+- python-dotenv
 
 Required Python libraries can be installed by executing `pip3 install -r requirements.txt` in `Silver` directory.
 
 #### Configuration
+
 Slack WebHook, Shodan API key and limits can be configured by editing respective variables in `/core/memory.py`
 
 #### Setting up Slack notifications
-- Create a workspace on slack, [here](https://slack.com/)
-- Create an app, [here](https://api.slack.com/apps/new)
-- Enable WebHooks from the app and copy the URL from there to Silver's `/core/memory.py` file.
+
+- Create an incoming webhook, https://example.slack.com/apps/manage/custom-integrations
+- Copy the incoming webhook url and export / provide on the CLI the env var SLACK_WEBHOOK containing that URL.
 
 ### Usage
 
@@ -68,43 +81,29 @@ Slack WebHook, Shodan API key and limits can be configured by editing respective
 
 :warning: Silver scans all TCP ports by default i.e. ports `0-65535`. Use `--quick` switch to only scan top ~1000 ports.
 
-#### Scan host(s) from command line
+#### Running as cron
 
-```
-python3 silver.py 127.0.0.1
-python3 silver.py 127.0.0.1/22
-python3 silver.py 127.0.0.1,127.0.0.2,127.0.0.3
-```
+Most probably you'd like to run the app as cron to have e.g. daily reports.  
+This way, do as follows:
 
-##### Scan top ~1000 ports
+1. Create a directory `/secscan`
+1. Clone the repo there `git clone -C /secscan https://github.com/giosg/Silver`
+1. Create auto update cron config in `/etc/cron.d/silver_autoupdate` (notice the empty newline in the end, that is on purpose!)
 
-```
-python3 silver.py 127.0.0.1 --quick
-```
+    ```cron
+    # Seek for updates from github for silver dir each 10m
+    */10 * * * * root /usr/bin/git -C /secscan/Silver pull && /usr/bin/pip3 install -r /secscan/Silver/requirements.txt
 
-##### Choose packets to be sent per seconds
+    ```
 
-```
-python3 silver.py 127.0.0.1 --rate 10000
-```
+1. Create the scanning configuration in `/etc/cron.d/perform_silver_scan`
 
-##### Scan hosts from a file
+    ```cron
+    SLACK_WEBHOOK="https://hooks.slack.com/services/XXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXX"
+    # Perform the security scan on schedule each day
+    0 8 * * * root /usr/bin/python3 /secscan/Silver/silver.py -i /secscan/targets.txt -C /secscan/results --cleanup-results --rate 2000 --vuln-cache-file /secscan/Silver/db/vulners_cache.json
 
-```
-python3 silver.py -i /path/to/targets.txt
-```
+    ```
 
-> Note: If your input file contains any hostnames, use the `--resolve` flag to tell Silver to resolve them to IPs because masscan only scans IPs.
-
-##### Set max number of parallel nmap instances
-
-```
-python3 silver.py -i /path/to/targets.txt -t 4
-```
-
-#### Contribution
-You can contribute to this project by providing suggestions, reporting sensible issues and spreading the word.
-Pull requessts for the following will not be accepted:
-- Typos
-- coDe qUaLiTY
-- Docker and .gitignore file
+1. Now put the IPs or subnets to scan to the `/secscan/targets.txt` and create directory `mkdir /secscan/results`
+1. Enjoy the results in your slack channel
