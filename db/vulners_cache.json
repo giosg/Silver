@@ -65,9 +65,6 @@
         "cpe:/a:pureftpd:pure-ftpd": false,
         "cpe:/a:openbsd:openssh:5.3": true,
         "cpe:/a:openbsd:openssh:6.6": true,
-        "cpe:/a:apache:http_server:2.0.40": true,
-        "cpe:/a:openbsd:openssh:7.6p1": false,
-        "cpe:/a:openbsd:openssh:8.2p1": false,
-        "cpe:/a:openbsd:openssh:8.9p1": false
+        "cpe:/a:apache:http_server:2.0.40": true
     }
 }
