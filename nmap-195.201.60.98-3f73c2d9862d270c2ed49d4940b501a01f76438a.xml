@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Wed Nov 30 14:46:32 2022 as: nmap -Pn -sT -oX /home/kvantonov/giosg/Silver/nmap-195.201.60.98-3f73c2d9862d270c2ed49d4940b501a01f76438a.xml -sV -p22 195.201.60.98 -->
+<nmaprun scanner="nmap" args="nmap -Pn -sT -oX /home/kvantonov/giosg/Silver/nmap-195.201.60.98-3f73c2d9862d270c2ed49d4940b501a01f76438a.xml -sV -p22 195.201.60.98" start="1669812392" startstr="Wed Nov 30 14:46:32 2022" version="7.80" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="1" services="22"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1669812393" endtime="1669812393"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="195.201.60.98" addrtype="ipv4"/>
+<hostnames>
+<hostname name="static.98.60.201.195.clients.your-server.de" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="ssh" product="OpenSSH" version="8.9p1 Ubuntu 3" extrainfo="Ubuntu Linux; protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:8.9p1</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service></port>
+</ports>
+<times srtt="34031" rttvar="34031" to="170155"/>
+</host>
+<runstats><finished time="1669812393" timestr="Wed Nov 30 14:46:33 2022" elapsed="0.42" summary="Nmap done at Wed Nov 30 14:46:33 2022; 1 IP address (1 host up) scanned in 0.42 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

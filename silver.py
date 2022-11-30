@@ -7,6 +7,7 @@ import json
 import psutil
 import argparse
 from multiprocessing import Pool, cpu_count
+from shutil import copy
 
 import core.memory
 from modules.pymap import pymap
@@ -65,6 +66,11 @@ else:
 	quit('%s No hosts to scan.' % bad)
 
 savefile = os.path.join(workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
+
+#try create copy of previous results file for checking changes
+if os.path.isfile(savefile):
+	copy(savefile, 'host_table.json')
+
 
 if args.resolve and input_file:
 	print('%s Resolving hostnames to IPs for masscan' % run)

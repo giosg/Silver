@@ -1,0 +1,68 @@
+{
+    "8.8.8.8": {
+        "53": {
+            "state": "open",
+            "service": "tcpwrapped",
+            "software": null,
+            "version": null,
+            "cpe": null
+        },
+        "443": {
+            "state": "open",
+            "service": "https",
+            "software": "HTTP server (unknown)",
+            "version": null,
+            "cpe": null
+        }
+    },
+    "78.46.39.167": {
+        "22": {
+            "state": "open",
+            "service": "ssh",
+            "software": "OpenSSH",
+            "version": "8.2p1 Ubuntu 4ubuntu0.4",
+            "cpe": "cpe:/a:openbsd:openssh:8.2p1"
+        }
+    },
+    "1.1.1.1": {
+        "53": {
+            "state": "open",
+            "service": "domain",
+            "software": null,
+            "version": null,
+            "cpe": null
+        },
+        "80": {
+            "state": "open",
+            "service": "http",
+            "software": "cloudflare",
+            "version": null,
+            "cpe": null
+        },
+        "443": {
+            "state": "open",
+            "service": "https",
+            "software": "cloudflare",
+            "version": null,
+            "cpe": null
+        }
+    },
+    "46.4.31.25": {
+        "22": {
+            "state": "open",
+            "service": "ssh",
+            "software": "OpenSSH",
+            "version": "7.6p1 Ubuntu 4ubuntu0.5",
+            "cpe": "cpe:/a:openbsd:openssh:7.6p1"
+        }
+    },
+    "157.90.249.198": {
+        "22": {
+            "state": "open",
+            "service": "ssh",
+            "software": "OpenSSH",
+            "version": "7.6p1 Ubuntu 4ubuntu0.6",
+            "cpe": "cpe:/a:openbsd:openssh:7.6p1"
+        }
+    }
+}
