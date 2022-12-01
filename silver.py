@@ -67,8 +67,6 @@ else:
 
 savefile = os.path.join(workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
 
-savefile = os.path.join(
-    workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
 if args.resolve and input_file:
 	print('%s Resolving hostnames to IPs for masscan' % run)
 	input_file = resolver(input_file)
