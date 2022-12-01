@@ -5,3 +5,4 @@ results
 paused.conf
 result-*.txt
 nmap-*.txt
+.env

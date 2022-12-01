@@ -7,6 +7,7 @@ import json
 import psutil
 import argparse
 from multiprocessing import Pool, cpu_count
+from shutil import copy
 
 import core.memory
 from modules.pymap import pymap
@@ -66,6 +67,8 @@ else:
 
 savefile = os.path.join(workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
 
+savefile = os.path.join(
+    workdir, MASSCAN_FILE_TEMPLATE.format(target_name=target_name))
 if args.resolve and input_file:
 	print('%s Resolving hostnames to IPs for masscan' % run)
 	input_file = resolver(input_file)
@@ -194,9 +197,24 @@ for ip in master_db:
 		)
 	)
 
+# for checking changes in vulnerabilities
+current_state = {}
+for ip in host_results:
+	current_state[ip.address.exploded]={}
+	for port in ip.services:
+		pt = {'port': port.port, 'is_vuln': port.is_vuln, 'name': port.name, 'version': port.definition}
+		current_state[ip.address.exploded][port.port]=pt
+
+with open('/secscan/results/current_results.json', 'w+') as jsonfile:
+    jsonfile.write(json.dumps(current_state))
+jsonfile.close()
+
 notify(host_results)
 
 print('%s Scan completed' % good)
+
+# save current results file for future check
+copy('/secscan/results/current_results.json', '/secscan/results/previous_results.json')
 
 if args.cleanup:
 	print('%s Cleaning up the files created...' % info)

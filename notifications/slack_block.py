@@ -3,6 +3,7 @@ from typing import List
 from notifications.hostinfo import HostInfo, HostService
 from datetime import datetime
 from collections import namedtuple
+from  notifications.changes_check import is_hostinfo_changed
 
 CIRCLES = {
   "VULN": ":red_circle:",
@@ -73,7 +74,22 @@ def get_notification_template_slack_block(hosts: List[HostInfo]) -> list:
 			}
 		}
   ]
+
+  new_blocks = []
+
   for host in hosts:
-    blocks = blocks + __get_host_field_section(host)
-  print(blocks)
-  return blocks
+    if not is_hostinfo_changed(host):
+      blocks = blocks + __get_host_field_section(host)
+    else: new_blocks = new_blocks + __get_host_field_section(host)
+
+  if new_blocks:
+    blocks = blocks + [{'type': 'divider'},{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "<@U04BG8BD0BA> Check the new ones:"
+        }
+      }] + new_blocks
+    return blocks
+  else:
+    return blocks
