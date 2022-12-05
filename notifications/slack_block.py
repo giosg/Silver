@@ -87,7 +87,8 @@ def get_notification_template_slack_block(hosts: List[HostInfo]) -> list:
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": "<@U04BG8BD0BA> Check the new ones:"
+          "text": "@infra Check the new ones:",
+          "link_names": True
         }
       }] + new_blocks
     return blocks
